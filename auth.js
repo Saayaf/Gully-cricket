@@ -1,19 +1,37 @@
-// Authentication Module
-const API_BASE_URL = 'https://api.gullycricket.live/v1';
+// Auth Constants
+const API_BASE_URL = 'http://localhost:3000/api';
+const AUTH_TOKEN_KEY = 'cricket_live_auth_token';
 
-// User session management
-let currentUser = null;
+// DOM Elements
+const loginForm = document.getElementById('loginForm');
+const signupForm = document.getElementById('signupForm');
 
-// Initialize auth state from localStorage
-const initializeAuth = () => {
-    const userData = localStorage.getItem('userData');
-    if (userData) {
-        currentUser = JSON.parse(userData);
+// Event Listeners
+if (loginForm) {
+    loginForm.addEventListener('submit', handleLogin);
+}
+
+if (signupForm) {
+    signupForm.addEventListener('submit', handleSignup);
+}
+
+// Handle Login
+async function handleLogin(e) {
+    e.preventDefault();
+    
+    const email = loginForm.email.value;
+    const password = loginForm.password.value;
+
+    if (!validateEmail(email)) {
+        showError('Please enter a valid email address');
+        return;
     }
-};
 
-// Login function
-export const login = async (email, password) => {
+    if (password.length < 6) {
+        showError('Password must be at least 6 characters');
+        return;
+    }
+
     try {
         const response = await fetch(`${API_BASE_URL}/auth/login`, {
             method: 'POST',
@@ -23,130 +41,103 @@ export const login = async (email, password) => {
             body: JSON.stringify({ email, password })
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-            throw new Error('Login failed');
+            throw new Error(data.message || 'Login failed');
         }
 
-        const data = await response.json();
-        currentUser = data.user;
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('userData', JSON.stringify(data.user));
-        return data.user;
+        // Save token and redirect
+        localStorage.setItem(AUTH_TOKEN_KEY, data.token);
+        window.location.href = '/';
     } catch (error) {
-        console.error('Login error:', error);
-        throw error;
+        showError(error.message);
     }
-};
+}
 
-// Signup function
-export const signup = async (userData) => {
+// Handle Signup
+async function handleSignup(e) {
+    e.preventDefault();
+    
+    const name = signupForm.name.value;
+    const email = signupForm.email.value;
+    const password = signupForm.password.value;
+    const confirmPassword = signupForm.confirmPassword.value;
+
+    if (!name || !email || !password || !confirmPassword) {
+        showError('All fields are required');
+        return;
+    }
+
+    if (!validateEmail(email)) {
+        showError('Please enter a valid email address');
+        return;
+    }
+
+    if (password.length < 6) {
+        showError('Password must be at least 6 characters');
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        showError('Passwords do not match');
+        return;
+    }
+
     try {
         const response = await fetch(`${API_BASE_URL}/auth/signup`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(userData)
+            body: JSON.stringify({ name, email, password })
         });
-
-        if (!response.ok) {
-            throw new Error('Signup failed');
-        }
 
         const data = await response.json();
-        currentUser = data.user;
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('userData', JSON.stringify(data.user));
-        return data.user;
-    } catch (error) {
-        console.error('Signup error:', error);
-        throw error;
-    }
-};
 
-// Logout function
-export const logout = () => {
-    currentUser = null;
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userData');
+        if (!response.ok) {
+            throw new Error(data.message || 'Signup failed');
+        }
+
+        // Save token and redirect
+        localStorage.setItem(AUTH_TOKEN_KEY, data.token);
+        window.location.href = '/';
+    } catch (error) {
+        showError(error.message);
+    }
+}
+
+// Helper Functions
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+}
+
+function showError(message) {
+    const errorElement = document.createElement('div');
+    errorElement.className = 'error-message';
+    errorElement.textContent = message;
+    
+    const authCard = document.querySelector('.auth-card');
+    authCard.insertBefore(errorElement, authCard.firstChild);
+    
+    setTimeout(() => {
+        errorElement.remove();
+    }, 5000);
+}
+
+// Check Authentication Status
+export function isAuthenticated() {
+    return !!localStorage.getItem(AUTH_TOKEN_KEY);
+}
+
+// Get Auth Token
+export function getAuthToken() {
+    return localStorage.getItem(AUTH_TOKEN_KEY);
+}
+
+// Logout
+export function logout() {
+    localStorage.removeItem(AUTH_TOKEN_KEY);
     window.location.href = '/login.html';
-};
-
-// Get current user
-export const getCurrentUser = () => {
-    return currentUser;
-};
-
-// Check if user is authenticated
-export const isAuthenticated = () => {
-    return !!currentUser;
-};
-
-// Password reset request
-export const requestPasswordReset = async (email) => {
-    try {
-        const response = await fetch(`${API_BASE_URL}/auth/password-reset`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email })
-        });
-
-        if (!response.ok) {
-            throw new Error('Password reset request failed');
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error('Password reset error:', error);
-        throw error;
-    }
-};
-
-// Verify password reset token
-export const verifyPasswordResetToken = async (token) => {
-    try {
-        const response = await fetch(`${API_BASE_URL}/auth/verify-reset-token`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ token })
-        });
-
-        if (!response.ok) {
-            throw new Error('Invalid or expired token');
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error('Token verification error:', error);
-        throw error;
-    }
-};
-
-// Update password
-export const updatePassword = async (token, newPassword) => {
-    try {
-        const response = await fetch(`${API_BASE_URL}/auth/update-password`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ token, newPassword })
-        });
-
-        if (!response.ok) {
-            throw new Error('Password update failed');
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error('Password update error:', error);
-        throw error;
-    }
-};
-
-// Initialize auth state when module loads
-initializeAuth();
+}

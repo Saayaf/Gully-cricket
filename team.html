@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Statistics - Cricket Live</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">Cricket Live</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/team.html" class="active">Teams</a></li>
+                <li><a href="#">Live Scores</a></li>
+                <li><a href="#">Stats</a></li>
+                <li><a href="#">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="team-container">
+        <section class="team-selector">
+            <h1>Team Statistics</h1>
+            <select id="teamSelect" aria-label="Select a cricket team to view statistics">
+                <option value="">Select a Team</option>
+                <option value="team1">Team A</option>
+                <option value="team2">Team B</option>
+                <option value="team3">Team C</option>
+            </select>
+        </section>
+
+        <section class="team-stats">
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <h3>Matches Played</h3>
+                    <p id="matchesPlayed">-</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Wins</h3>
+                    <p id="wins">-</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Losses</h3>
+                    <p id="losses">-</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Win Percentage</h3>
+                    <p id="winPercentage">-</p>
+                </div>
+            </div>
+
+            <h2>Player Statistics</h2>
+            <table class="player-stats-table">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Matches</th>
+                        <th>Runs</th>
+                        <th>Wickets</th>
+                        <th>Average</th>
+                    </tr>
+                </thead>
+                <tbody id="playerStats">
+                    <!-- Player stats will be populated here -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Cricket Live. All rights reserved.</p>
+    </footer>
+
+    <script src="team.js"></script>
+</body>
+</html>

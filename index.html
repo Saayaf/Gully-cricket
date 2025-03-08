@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Cricket Scoreboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">Cricket Live</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/team.html">Teams</a></li>
+                <li><a href="#">Live Scores</a></li>
+                <li><a href="#">Stats</a></li>
+                <li><a href="#">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Live Local Cricket Scores</h1>
+                <p>Real-time updates for your gully cricket matches</p>
+            </div>
+        </section>
+
+        <section class="live-scores">
+            <h2>Live Matches</h2>
+            <div class="matches-container" id="liveMatches">
+                <!-- Live matches will be populated here -->
+                <div class="loading">Loading live scores...</div>
+            </div>
+        </section>
+
+        <section class="upcoming-matches">
+            <h2>Upcoming Matches</h2>
+            <div class="matches-container" id="upcomingMatches">
+                <!-- Upcoming matches will be populated here -->
+                <div class="loading">Loading upcoming matches...</div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Cricket Live. All rights reserved.</p>
+    </footer>
+
+    <script src="team.js"></script>
+</body>
+</html>
